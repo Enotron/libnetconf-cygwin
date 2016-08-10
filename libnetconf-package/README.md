@@ -4,11 +4,13 @@ This folder contains 2 files
 
 There might be a file there 
 - libnetconf-0.10.0.zip
+
 If not then run 
 - cygport libnetconf.cygport download
 
 There might also be a folder there 
 - libnetconf-0.10.0-1.x86_64
+
 To clean it away run: 
 - cygport libnetconf.cygport clean
 

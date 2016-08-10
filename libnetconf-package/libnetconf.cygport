@@ -1,0 +1,17 @@
+NAME="libnetconf"
+VERSION=0.10.0
+RELEASE=1
+CATEGORY="Libs"
+SUMMARY="A NETCONF library in C intended for building NETCONF clients and servers"
+DESCRIPTION="libnetconf is a NETCONF library in C intended for building NETCONF clients \
+and servers. It provides basic functions to connect NETCONF client and server to each \
+other via SSH, to send and receive NETCONF messages and to store and work with the \
+configuration data in a datastore. libnetconf is maintained and further developed by the \
+Tools for Monitoring and Configuration department of CESNET."
+HOMEPAGE="https://github.com/CESNET/libnetconf"
+SRC_URI="https://github.com/CESNET/libnetconf/archive/0.10.x.zip#/libnetconf-0.10.0.zip"
+SRC_DIR="libnetconf-0.10.x"
+PATCH_URI="libnetconf-0.10.0-1.src.patch"
+CFLAGS="-I src"
+CYGCONF_ARGS="--disable-fmon"
+REQUIRES=pyang

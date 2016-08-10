@@ -1,0 +1,15 @@
+NAME="netopeer-cli"
+VERSION=0.8.0
+RELEASE=1
+CATEGORY="Comm"
+SUMMARY="CLI interface allowing user to connect to a NETCONF-enabled device and to obtain and manipulate its configuration data"
+DESCRIPTION="Netopeer is a set of NETCONF tools built on the libnetconf library. \
+It allows operators to connect to their NETCONF-enabled devices as well as developers \
+to allow control their devices via NETCONF. More information about NETCONF protocol can \
+be found at NETCONF WG. libnetconf is maintained and further developed by the \
+Tools for Monitoring and Configuration department of CESNET."
+HOMEPAGE="https://github.com/CESNET/netopeer"
+SRC_URI="https://github.com/CESNET/netopeer/archive/master.zip#/netopeer-cli-0.8.0.zip"
+SRC_DIR="netopeer-master/cli"
+PATCH_URI="netopeer-cli-0.8.0-1.src.patch"
+REQUIRES="libnetconf"

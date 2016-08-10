@@ -1,0 +1,102 @@
+diff --git a/cli/Makefile.in b/cli/Makefile.in
+index ff1f34c..ecdfe00 100644
+--- a/cli/Makefile.in
++++ b/cli/Makefile.in
+@@ -94,10 +94,16 @@ define MANINSTALL
+ $(INSTALL_DATA) $(1) $(call MANPATH,$(1))/;
+ endef
+ 
+-all: $(NAME)
++all: $(NAME) docprep
+ 
+ $(NAME): $(OBJS)
+ 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJS) $(LIBS) -o $(NAME)
++	
++.PHONY: docprep
++docprep: $(MANPAGES) $(MANHTMLS)
++	mkdir -p doc; \
++	cp $(srcdir)/$(MANPAGES) doc
++	cp $(srcdir)/$(MANHTMLS) doc
+ 
+ .PHONY: static
+ static: $(OBJS)
+diff --git a/cli/commands.c b/cli/commands.c
+index 7c02d4d..59f13a8 100644
+--- a/cli/commands.c
++++ b/cli/commands.c
+@@ -51,7 +51,9 @@
+ #include <sys/mman.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
++#ifdef ENABLE_TLS
+ #include <sys/sendfile.h>
++#endif
+ #include <fcntl.h>
+ #include <dirent.h>
+ #include <time.h>
+@@ -3076,9 +3078,9 @@ int cmd_crl(const char* arg, const char* UNUSED(old_input_file), FILE* output, F
+ 
+ void cmd_connect_help(FILE* output) {
+ #ifdef ENABLE_TLS
+-	fprintf(output, "connect [--help] [--port <num>] [--login <username>] [--tls] [--cert <cert_path> [--key <key_path>]] [--trusted <trusted_CA_store.pem>] host\n");
++	fprintf(output, "connect [--help] [--port <num>] [--login <username>] [--timeout <seconds>] [--tls] [--cert <cert_path> [--key <key_path>]] [--trusted <trusted_CA_store.pem>] host\n");
+ #else
+-	fprintf(output, "connect [--help] [--port <num>] [--login <username>] host\n");
++	fprintf(output, "connect [--help] [--port <num>] [--login <username>] [--timeout <seconds>] host\n");
+ #endif
+ }
+ 
+@@ -3096,12 +3098,14 @@ void cmd_listen_help(FILE* output) {
+ #define DEFAULT_PORT_CH_SSH 6666
+ #define DEFAULT_PORT_CH_TLS 6667
+ #define ACCEPT_TIMEOUT 60000 /* 1 minute */
++#define CONNECT_TIMEOUT 10 //10 seconds
+ 
+ static int cmd_connect_listen(const char* arg, int is_connect, FILE* output, FILE* input) {
+ 	char* func_name = (is_connect ? strdupa("connect") : strdupa("listen"));
+ #ifndef DISABLE_CALLHOME
+ 	static unsigned short listening = 0;
+ 	int timeout = ACCEPT_TIMEOUT;
++	int connectTimeout = CONNECT_TIMEOUT;
+ #endif
+ 	char *host = NULL, *user = NULL;
+ #ifdef ENABLE_TLS
+@@ -3118,6 +3122,7 @@ static int cmd_connect_listen(const char* arg, int is_connect, FILE* output, FIL
+ 			{"help", 0, 0, 'h'},
+ 			{"port", 1, 0, 'p'},
+ 			{"login", 1, 0, 'l'},
++			{"timeout", 1, 0, 'o'},
+ #ifdef ENABLE_TLS
+ 			{"tls", 0, 0, 't'},
+ 			{"cert", 1, 0, 'c'},
+@@ -3144,9 +3149,9 @@ static int cmd_connect_listen(const char* arg, int is_connect, FILE* output, FIL
+ 	addargs(&cmd, "%s", arg);
+ 
+ #ifdef ENABLE_TLS
+-	while ((c = getopt_long(cmd.count, cmd.list, "hp:l:tc:k:s:", long_options, &option_index)) != -1)
++	while ((c = getopt_long(cmd.count, cmd.list, "hp:l:o:tc:k:s:", long_options, &option_index)) != -1)
+ #else
+-	while ((c = getopt_long(cmd.count, cmd.list, "hp:l:", long_options, &option_index)) != -1)
++	while ((c = getopt_long(cmd.count, cmd.list, "hp:l:o:", long_options, &option_index)) != -1)
+ #endif
+ 	{
+ 		switch (c) {
+@@ -3171,6 +3176,9 @@ static int cmd_connect_listen(const char* arg, int is_connect, FILE* output, FIL
+ 		case 'l':
+ 			user = optarg;
+ 			break;
++		case 'o':
++			connectTimeout = (int)atoi(optarg);
++			break;
+ #ifdef ENABLE_TLS
+ 		case 't':
+ 			if (nc_session_transport(NC_TRANSPORT_TLS) == EXIT_SUCCESS) {
+@@ -3285,7 +3293,7 @@ static int cmd_connect_listen(const char* arg, int is_connect, FILE* output, FIL
+ 		}
+ 
+ 		/* create the session */
+-		session = nc_session_connect(host, port, user, opts->cpblts);
++		session = nc_session_connect(host, port, user, opts->cpblts, connectTimeout);
+ 		if (session == NULL) {
+ 			ERROR(func_name, "connecting to the %s:%d as user \"%s\" failed.", host, port, user);
+ 			if (hostfree) {

@@ -1,0 +1,12 @@
+NAME="pyang"
+VERSION=1.6
+RELEASE=1
+CATEGORY="Python"
+SUMMARY="An extensible YANG validator and converter in python"
+DESCRIPTION="pyang is a YANG validator, transformator and code generator, \
+written in python. It can be used to validate YANG modules for correctness, \
+to transform YANG modules into other formats, and to generate code from the modules."
+HOMEPAGE="https://github.com/mbj4668/pyang"
+SRC_URI="https://github.com/mbj4668/pyang/archive/master.zip#/pyang-1.6.zip"
+SRC_DIR="pyang-master"
+PATCH_URI="pyang-1.6-1.src.patch"

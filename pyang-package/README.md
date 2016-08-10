@@ -1,7 +1,11 @@
-To start creating the pyang package from scratch, make sure you have git, python 3 and python-setuptools installed on Cygwin 
+To start creating the pyang package from scratch, make sure you have 
+- git 
+- python 3 and 
+- python-setuptools 
+installed on Cygwin 
 
-Check out the pyang code in to github by cloning from https://github.com/mbj4668/pyang.git
-~/github/pyang
+Check out the pyang code in to github by cloning from https://github.com/mbj4668/pyang.git to
+> ~/github/pyang
 
 Then do a full install of pyang following the instructions in the README
 

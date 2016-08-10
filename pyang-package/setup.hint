@@ -1,0 +1,6 @@
+category: Python
+requires: cygwin python3 python3-libxml2 python3-setuptools
+sdesc: "An extensible YANG validator and converter in python"
+ldesc: "pyang is a YANG validator, transformator and code generator,
+written in python. It can be used to validate YANG modules for correctness,
+to transform YANG modules into other formats, and to generate code from the modules."
